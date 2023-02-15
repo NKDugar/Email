@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Folder{
+struct Folder {
     
     var name: String
     var unreadEmails: Int = 0

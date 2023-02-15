@@ -12,8 +12,7 @@ struct User{
     let Name: String
     let EmailID: String
     let password: String
-    var listOfFolders: [Folder] = []
-    
+    var listOfFolders: [Folder] = [ ]
     
     init(){
         Name = " "

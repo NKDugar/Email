@@ -10,15 +10,15 @@ import Foundation
 private var useCase = userUseCase()
 private var currentUser = User()
 
-let acc1 = User(Name: "naveen",  EmailID: "naveen@gmail.com" , password: "12345")
-let acc2 = User(Name: "guhan", EmailID: "guhan@gmail.com" , password: "12345")
-let acc3 = User(Name: "deepak", EmailID: "deepak@gmail.com", password: "12345")
-let acc4 = User(Name: "arun", EmailID: "arun@gmail.com", password: "12345")
+var acc1 = User(Name: "naveen",  EmailID: "naveen@gmail.com" , password: "12345")
+var acc2 = User(Name: "guhan", EmailID: "guhan@gmail.com" , password: "12345")
+var acc3 = User(Name: "deepak", EmailID: "deepak@gmail.com", password: "12345")
+var acc4 = User(Name: "arun", EmailID: "arun@gmail.com", password: "12345")
 
-let result1 = useCase.registerUser(user: acc1)
-let result2 = useCase.registerUser(user: acc2)
-let result3 = useCase.registerUser(user: acc3)
-let result4 = useCase.registerUser(user: acc4)
+let result1 = useCase.registerUser(user: &acc1)
+let result2 = useCase.registerUser(user: &acc2)
+let result3 = useCase.registerUser(user: &acc3)
+let result4 = useCase.registerUser(user: &acc4)
 
 
 
@@ -40,8 +40,8 @@ while true{
             let emailID = readLine()!
             print("enter password: ",terminator: " ")
             let password = readLine()!
-            let newUser = User(Name: userName, EmailID: emailID, password: password)
-            if useCase.registerUser(user: newUser){
+            var newUser = User(Name: userName, EmailID: emailID, password: password)
+            if useCase.registerUser(user: &newUser){
                 print("user registration successfull ")
             }
         case 2:
@@ -53,13 +53,9 @@ while true{
             guard var loginUser = useCase.loginUser(emailID: emailID, password: password)else{
                 return
             }
-            if loginUser == nil {
-                print("login failed")
-            }else{
-                print("login successfull : \(String(describing: loginUser.EmailID))")
-                currentUser = loginUser
-                afterLogin(user: &loginUser)
-            }
+            print("login successfull : \(String(describing: loginUser.EmailID))")
+            currentUser = loginUser
+            afterLogin(user: &loginUser)
             
         default:
             print("invalid option entered")
@@ -68,9 +64,12 @@ while true{
     
     func afterLogin(user: inout User){
         print("1. compose mail")
-        print("2. inbox")
-        print("3. sent")
-        print("4. logout")
+        print("2. inboxMails")
+        print("3. sentMails")
+        print("4. addFolders")
+        print("5. listOffolders")
+        print("6. logout")
+        print("7. starred messages")
         let optionSelected = readLine()!
         let optionselected = Int(optionSelected)
         switch optionselected{
@@ -78,16 +77,34 @@ while true{
             print("--------  composing a email -------")
             
             composeMailView(user: &user)
+            afterLogin(user: &user)
             
         case 2:
             print("----------  inbox -  --------")
+            useCase.displayInboxMails(user: user)
             afterLogin(user: &user)
-            
+            afterOpeningInboxMails(user: &user)
         case 3:
             print("------  opening sentMails folder ---------")
+            useCase.displaySentMails(user: user)
+            afterLogin(user: &user)
             
         case 4:
+            print("----- adding folders -----")
+            print("enter the name of the folder: ",terminator: " ")
+            let foldername = readLine()
+            guard let currentUser = useCase.addFolders(user: &user, folderName: foldername ?? "default") else {
+                print("the current user is nil")
+                return
+            }
+            afterLogin(user: &user)
+        case 5:
+            print("displaying list of folders in user ")
+            useCase.displayListOfFolders(user: user)
+            afterLogin(user: &user)
+        case 6:
             print(" ----- logout ------")
+            useCase.userLogout()
             registerAndLoginPage()
         
         case 10:
@@ -146,17 +163,36 @@ while true{
         case 1:
             print("--------  send -------")
             var currentUser = useCase.sendEmail(user: &user, email: email)
-            useCase.getUserDetails(emailId: currentUser!.EmailID)
             print("-------")
-            afterLogin(user: &user)
+            afterLogin(user: &currentUser!)
         case 2:
             print("----------  cancel   --------")
-            
+            afterLogin(user: &user)
         default:
             print("-------- invalid number entered -------")
         }
         
     }
     
+    func afterOpeningInboxMails(user: inout User){
+        print("1. back")
+        print("2. deleteMails")
+        print("3. openMail")
+        print("selected option: ",terminator: " ")
+        let optionSelected = readLine()!
+        let optionselected = Int(optionSelected)
+        switch optionselected{
+        case 1:
+            afterLogin(user: &user)
+        case 2:
+            print("----- delete selected mails -----")
+//            deletingInboxMails()
+        case 3:
+            print("something")
+//            openingSelectedMail()
+        default:
+            print("-------- invalid number entered -------")
+        }
+    }
     registerAndLoginPage()
 }
