@@ -15,10 +15,12 @@ var acc2 = User(Name: "guhan", EmailID: "guhan@gmail.com" , password: "12345")
 var acc3 = User(Name: "deepak", EmailID: "deepak@gmail.com", password: "12345")
 var acc4 = User(Name: "arun", EmailID: "arun@gmail.com", password: "12345")
 
-let result1 = useCase.registerUser(user: &acc1)
-let result2 = useCase.registerUser(user: &acc2)
-let result3 = useCase.registerUser(user: &acc3)
-let result4 = useCase.registerUser(user: &acc4)
+
+
+let result1 = useCase.registerUser(user: acc1)
+let result2 = useCase.registerUser(user: acc2)
+let result3 = useCase.registerUser(user: acc3)
+let result4 = useCase.registerUser(user: acc4)
 
 
 
@@ -82,12 +84,11 @@ while true{
         case 2:
             print("----------  inbox -  --------")
             useCase.displayInboxMails(user: user)
-            afterLogin(user: &user)
             afterOpeningInboxMails(user: &user)
         case 3:
             print("------  opening sentMails folder ---------")
             useCase.displaySentMails(user: user)
-            afterLogin(user: &user)
+            afterOpeningSentMails(user: &user)
             
         case 4:
             print("----- adding folders -----")
@@ -109,7 +110,7 @@ while true{
         
         case 10:
             print("displaying user info: ")
-            
+            Database.shared.displayAllTheData()
         
         default:
             print("----------- invalid number entered -----------")
@@ -186,7 +187,8 @@ while true{
             afterLogin(user: &user)
         case 2:
             print("----- delete selected mails -----")
-//            deletingInboxMails()
+            deletingInboxMails(user: &user)
+            
         case 3:
             print("something")
 //            openingSelectedMail()
@@ -194,5 +196,47 @@ while true{
             print("-------- invalid number entered -------")
         }
     }
+    
+    func deletingInboxMails(user: inout User){
+        print("-------- deletingInboxMails() ------- ")
+        print("enter the mail SNo. to delete: ",terminator: " ")
+        let input = readLine()
+        let input1 = Int(input ?? "0") ?? -1
+        print("input number: ",input1)
+        currentUser = useCase.deleteInboxMails(user: &user, mailNo: input1) ?? User()
+        afterOpeningInboxMails(user: &currentUser)
+    }
+    
+    func afterOpeningSentMails(user: inout User){
+        print("1. back")
+        print("2. deleteMails")
+        print("selected option: ",terminator: " ")
+        let optionSelected = readLine()!
+        let optionselected = Int(optionSelected)
+        switch optionselected{
+        case 1:
+            afterLogin(user: &user)
+        case 2:
+            print("----- delete selected mails -----")
+            deletingSentMails(user: &user)
+            afterLogin(user: &user)
+        case 3:
+            print("something")
+//            openingSelectedMail()
+        default:
+            print("-------- invalid number entered -------")
+        }
+    }
+    
+    func deletingSentMails(user: inout User){
+        print("-------- deletingSentMails() ------- ")
+        print("enter the mail SNo. to delete: ",terminator: " ")
+        let input = readLine()
+        let input1 = Int(input ?? "0") ?? -1
+        
+        let updatedUser = useCase.deleteSentMails(user: &user, mailNo: input1)
+        afterLogin(user: &user)
+    }
+
     registerAndLoginPage()
 }

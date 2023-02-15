@@ -14,12 +14,10 @@ class Database{
     
     private var emailAndUser: [String:User] = [ : ]
     private var AllEmails: [Emails] = [ ]
-    var isUserLoggedIn: Bool = false
+     var  isUserLoggedIn: Bool = false
     
-    func registerUser(user: inout User)->Bool{
+    func registerUser(user: User)->Bool{
         if emailAndUser[user.EmailID] == nil {
-            user.listOfFolders.append(Folder(name: "Inbox"))
-            user.listOfFolders.append(Folder(name: "Sent"))
             emailAndUser[user.EmailID] = user
             return true
         }else{
@@ -111,21 +109,36 @@ class Database{
 
     func sendMail(email: Emails){
         AllEmails.append(email)
-        print("database - adding ail to allmails: ")
+//        print("database - adding ail to allmails: ")
     }
     
     func updateUser(user: inout User)->User?{
         emailAndUser[user.EmailID] = user
-        print("database - updating")
+//        print("database - updating")
         return emailAndUser[user.EmailID]
     }
     
+    func addSentMail(id: String, mail: Emails) {
+        let this = emailAndUser[id]
+//        this?.listOfFolders[0].listOfMails.append(ma)
+    }
+    
     func getUserDetails(emailId: String)->User?{
-        print("getting user details : ")
+//        print("getting user details : ")
         return emailAndUser[emailId]
     }
     
     func getAllMails()->[Emails]{
         return self.AllEmails
     }
+    
+    func displayAllTheData(){
+        for (key,value) in emailAndUser{
+            print(key,value)
+            print("     ")
+        }
+    }
+    
 }
+
+
