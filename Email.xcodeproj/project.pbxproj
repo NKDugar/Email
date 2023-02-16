@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0662CB62299E607900128962 /* EmailAppContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0662CB61299E607900128962 /* EmailAppContract.swift */; };
 		066EC305299B5399006CE470 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 066EC304299B5399006CE470 /* main.swift */; };
 		066EC30C299B53A5006CE470 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 066EC30B299B53A5006CE470 /* User.swift */; };
 		066EC30E299B540D006CE470 /* Emails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 066EC30D299B540D006CE470 /* Emails.swift */; };
@@ -28,6 +29,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0662CB61299E607900128962 /* EmailAppContract.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailAppContract.swift; sourceTree = "<group>"; };
 		066EC301299B5399006CE470 /* Email */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Email; sourceTree = BUILT_PRODUCTS_DIR; };
 		066EC304299B5399006CE470 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		066EC30B299B53A5006CE470 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
@@ -72,6 +74,7 @@
 				066EC30D299B540D006CE470 /* Emails.swift */,
 				066EC30F299B5496006CE470 /* Folder.swift */,
 				066EC311299B54F3006CE470 /* userUseCase.swift */,
+				0662CB61299E607900128962 /* EmailAppContract.swift */,
 				066EC313299B5517006CE470 /* Database.swift */,
 			);
 			path = Email;
@@ -139,6 +142,7 @@
 				066EC30E299B540D006CE470 /* Emails.swift in Sources */,
 				066EC312299B54F3006CE470 /* userUseCase.swift in Sources */,
 				066EC30C299B53A5006CE470 /* User.swift in Sources */,
+				0662CB62299E607900128962 /* EmailAppContract.swift in Sources */,
 				066EC305299B5399006CE470 /* main.swift in Sources */,
 				066EC310299B5496006CE470 /* Folder.swift in Sources */,
 			);

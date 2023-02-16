@@ -11,7 +11,7 @@ class userUseCase{
     
     func registerUser(user:  User)->Bool{
         if Database.shared.registerUser(user: user){
-//         print("user registered succesfully")
+            //         print("user registered succesfully")
             return true
         }else{
             return false
@@ -24,7 +24,7 @@ class userUseCase{
     }
     
     func composeMail(email: Emails)-> Emails? {
-       
+        
         if Database.shared.validateUser(toAddress: email.toAddress){
             if Database.shared.validateCC(email: email ){
                 print("userUseCase - email was successfully composed ")
@@ -37,12 +37,12 @@ class userUseCase{
             print("userUseCase - failed to authenticate toAddress")
             return nil
         }
-       
+        
     }
     
     func sendEmail(user:  User , email: Emails)->User?{
-        print(" -------------------------------------- ")
-        print("userEmailId in sent mail: \(user.EmailID)")
+        //        print(" -------------------------------------- ")
+        //        print("userEmailId in sent mail: \(user.EmailID)")
         Database.shared.sendMail(email: email)
         var fromAddressUser = Database.shared.getUserDetails(emailId: email.fromAddress)
         var toAddressUser = Database.shared.getUserDetails(emailId: email.toAddress)
@@ -55,8 +55,8 @@ class userUseCase{
                     fromAddressUser?.listOfFolders[i].listOfMails.append(email)
                     fromAddressUser?.listOfFolders[i].unreadEmails += 1
                     fromAddressUser = Database.shared.updateUser(user: &fromAddressUser!)
-                   
-//                    print("s1 : \(user.EmailID)")
+                    
+                    //                    print("s1 : \(user.EmailID)")
                 }
             }
         }
@@ -68,20 +68,20 @@ class userUseCase{
                 if toAddressUser?.listOfFolders[i].name == "Inbox"{
                     toAddressUser?.listOfFolders[i].listOfMails.append(email)
                     toAddressUser?.listOfFolders[i].unreadEmails += 1
-                    let currenttoAddressUser = Database.shared.updateUser(user: &toAddressUser!)
-//                    print("s2: \(String(describing: currenttoAddressUser?.EmailID))")
+                    toAddressUser = Database.shared.updateUser(user: &toAddressUser!)
+                    //                    print("s2: \(String(describing: currenttoAddressUser?.EmailID))")
                 }
             }
         }
-
+        
         let cc = email.cc
-
+        
         if cc![0] == ""{
             print("no cc provided")
         }
         else{
             for emailID in cc! {
-                 var toAddressUser = Database.shared.getUserDetails(emailId: emailID)
+                var toAddressUser = Database.shared.getUserDetails(emailId: emailID)
                 for i in 0..<toAddressUser!.listOfFolders.count{
                     if toAddressUser?.listOfFolders.isEmpty == true {
                         print("no folders there in : \(String(describing: toAddressUser?.EmailID ?? nil))")
@@ -89,104 +89,172 @@ class userUseCase{
                         if toAddressUser?.listOfFolders[i].name == "Inbox"{
                             toAddressUser?.listOfFolders[i].listOfMails.append(email)
                             toAddressUser?.listOfFolders[i].unreadEmails += 1
-                            _ = Database.shared.updateUser(user: &toAddressUser!)
-//                            print("s3: ")
+                            toAddressUser = Database.shared.updateUser(user: &toAddressUser!)
+                            //                            print("s3: ")
                         }
                     }
                 }
             }
         }
-        print("userEmailId in sent mail: \(user.EmailID)")
-        print(" -------------------------------------- ")
-        return user
+        //        print("userEmailId in sent mail: \(user.EmailID)")
+        //        print(" -------------------------------------- ")
+        return fromAddressUser
     }
     
     func userLogout(){
         Database.shared.isUserLoggedIn = false
     }
     
-    func displaySentMails(user: User){
-        print(" -------------------------------------- ")
-        print("userEmailId in DisplaysenTmails: \(user.EmailID)")
+    //    func displaySentMails(user: User ){
+    //        print("----------------------------------------")
+    ////        print("userEmailId in DisplaysenTmails: \(user.EmailID)")
+    //        let user1 = Database.shared.getUserDetails(emailId: user.EmailID)
+    //
+    //        for folder in user1!.listOfFolders{
+    //            if folder.name == "Sent" {
+    //                if folder.listOfMails.isEmpty {
+    //                    print("NO MAILS TO DISPLAY")
+    //                }else{
+    //                    for (index,mail) in folder.listOfMails.enumerated(){
+    //                        print("Sno: \(index+1) , toAddress: \(mail.toAddress) , subject: \(mail.subject ?? " "), body: \(mail.body ?? " ") ")
+    //                        if let ccArray = mail.cc {
+    //                            print("CC:  ",terminator: " ")
+    //                            for cc in ccArray {
+    //                                print(cc,terminator: " ")
+    //                            }
+    //                        }
+    //                        print()
+    //                    }
+    //                }
+    //            }
+    //        }
+    //        print(" -------------------------------------- ")
+    //    }
+    //
+    //    func displayInboxMails(user: User){
+    ////        let updatedUser = Database.shared.getUserDetails(emailId: user.EmailID)
+    ////        print(" -------------------------------------- ")
+    ////        print("userEmailID in displayInbox: \(user.EmailID)")
+    //        for folder in user.listOfFolders{
+    //            if folder.name == "Inbox" {
+    //                if folder.listOfMails.isEmpty {
+    //                    print("NO MAILS TO DISPLAY")
+    //                }else{
+    //                    for (index,mail) in folder.listOfMails.enumerated(){
+    //                        print("Sno: \(index+1) , fromAddress: \(mail.fromAddress) , subject: \(mail.subject ?? " ") ")
+    //                        if let ccArray = mail.cc {
+    //                            print(" CC  : ",terminator: " ")
+    //                            for cc in ccArray {
+    //                                print(cc,terminator: "  ")
+    //                            }
+    //                        }
+    //                    }
+    //                }
+    //            }
+    //        }
+    //        print()
+    //        print(" -------------------------------------- ")
+    //    }
+    
+    func displayMails(user: User , folderName: String){
+        print("----------------------------------------")
+        //        print("userEmailId in DisplaysenTmails: \(user.EmailID)")
         let user1 = Database.shared.getUserDetails(emailId: user.EmailID)
+        
         for folder in user1!.listOfFolders{
-            if folder.name == "Sent" {
-                for (index,mail) in folder.listOfMails.enumerated(){
-                    print("Sno: \(index+1) , toAddress: \(mail.toAddress) , subject: \(String(describing: mail.subject)) ")
+            if folder.name == folderName {
+                if folder.listOfMails.isEmpty {
+                    print("NO MAILS TO DISPLAY")
+                }else{
+                    for (index,mail) in folder.listOfMails.enumerated(){
+                        print("Sno: \(index+1) , toAddress: \(mail.toAddress) , subject: \(mail.subject ?? " "), body: \(mail.body ?? " ") ")
+                        if let ccArray = mail.cc {
+                            print("CC:  ",terminator: " ")
+                            for cc in ccArray {
+                                print(cc,terminator: " ")
+                            }
+                        }
+                        print()
+                    }
+                }
+            }
+        }
+        print(" -------------------------------------- ")
+    }
+    
+    //    func deleteInboxMails(user:  User , mailNo: Int)->User?{
+    //        var updatedUser = Database.shared.getUserDetails(emailId: user.EmailID)
+    //
+    //        for i in 0..<updatedUser!.listOfFolders.count{
+    //            if updatedUser!.listOfFolders[i].name == "Inbox"{
+    //                for j in 0..<updatedUser!.listOfFolders[i].listOfMails.count{
+    //                    if mailNo - 1 == j {
+    //                        if updatedUser!.listOfFolders[2].name == "Bin"{
+    //                            updatedUser!.listOfFolders[2].listOfMails.append(updatedUser!.listOfFolders[i].listOfMails[mailNo-1])
+    //                            updatedUser!.listOfFolders[2].unreadEmails += 1
+    //                                    updatedUser!.listOfFolders[i].listOfMails.remove(at: j)
+    //                                    updatedUser?.listOfFolders[i].unreadEmails -= 1
+    //                                    _ = Database.shared.updateUser(user: &updatedUser!)
+    //                        }
+    //                    }
+    //                }
+    //            }
+    //        }
+    //
+    ////        print("ututut",user.listOfFolders[0].listOfMails.count)
+    //        return updatedUser
+    //    }
+    //
+    //    func deleteSentMails(user:  User , mailNo: Int)->User?{
+    //        var updatedUser = Database.shared.getUserDetails(emailId: user.EmailID)
+    //
+    //        for i in 0..<updatedUser!.listOfFolders.count{
+    //            if updatedUser!.listOfFolders[i].name == "Sent"{
+    //                for j in 0..<updatedUser!.listOfFolders[i].listOfMails.count{
+    //                    if mailNo - 1 == j {
+    //                        if updatedUser!.listOfFolders[2].name == "Bin"{
+    //                            updatedUser!.listOfFolders[2].listOfMails.append(updatedUser!.listOfFolders[i].listOfMails[mailNo-1])
+    //                            updatedUser!.listOfFolders[2].unreadEmails += 1
+    //                                    updatedUser!.listOfFolders[i].listOfMails.remove(at: j)
+    //                                    updatedUser?.listOfFolders[i].unreadEmails -= 1
+    //                                    _ = Database.shared.updateUser(user: &updatedUser!)
+    //                        }
+    //                    }
+    //                }
+    //            }
+    //        }
+    //
+    ////        print("ututut",user.listOfFolders[0].listOfMails.count)
+    //        return updatedUser
+    //    }
+    //
+    
+    func deleteMail(user:  User , mailNo: Int, folderName: String)->User?{
+        var updatedUser = Database.shared.getUserDetails(emailId: user.EmailID)
+        
+        for i in 0..<updatedUser!.listOfFolders.count{
+            if updatedUser!.listOfFolders[i].name == folderName{
+                if updatedUser!.listOfFolders[i].listOfMails.isEmpty{
+                    print("NO MAILS TO DELETE ")
+                }else{
+                    for j in 0..<updatedUser!.listOfFolders[i].listOfMails.count{
+                        if mailNo - 1 == j {
+                            if updatedUser!.listOfFolders[2].name == "Bin"{
+                                updatedUser!.listOfFolders[2].listOfMails.append(updatedUser!.listOfFolders[i].listOfMails[mailNo-1])
+                                updatedUser!.listOfFolders[2].unreadEmails += 1
+                                updatedUser!.listOfFolders[i].listOfMails.remove(at: j)
+                                updatedUser?.listOfFolders[i].unreadEmails -= 1
+                                _ = Database.shared.updateUser(user: &updatedUser!)
+                            }
+                        }
+                    }
                     
-                    if let ccArray = mail.cc {
-                        for cc in ccArray {
-                            print("cc: ",cc,terminator: " ")
-                        }
-                    }
-                    print()
                 }
             }
         }
-        print(" -------------------------------------- ")
-    }
-    
-    func displayInboxMails(user: User){
-//        let updatedUser = Database.shared.getUserDetails(emailId: user.EmailID)
-        print(" -------------------------------------- ")
-        print("userEmailID in displayInbox: \(user.EmailID)")
-        for folder in user.listOfFolders{
-            if folder.name == "Inbox" {
-                for (index,mail) in folder.listOfMails.enumerated(){
-                    print("Sno: \(index+1) , fromAddress: \(mail.fromAddress) , subject: \(String(describing: mail.subject)) ")
-                    if let ccArray = mail.cc {
-                        for cc in ccArray {
-                            print("cc: \t ",cc)
-                        }
-                    }
-                }
-            }
-        }
-        print(" -------------------------------------- ")
-    }
-    
-    func deleteInboxMails(user:  User , mailNo: Int)->User?{
-        var updatedUser = Database.shared.getUserDetails(emailId: user.EmailID)
         
-        for i in 0..<updatedUser!.listOfFolders.count{
-            if updatedUser!.listOfFolders[i].name == "Inbox"{
-                for j in 0..<updatedUser!.listOfFolders[i].listOfMails.count{
-                    if mailNo - 1 == j {
-                        if updatedUser!.listOfFolders[2].name == "Bin"{
-                            updatedUser!.listOfFolders[2].listOfMails.append(updatedUser!.listOfFolders[i].listOfMails[mailNo-1])
-                            updatedUser!.listOfFolders[2].unreadEmails += 1
-                                    updatedUser!.listOfFolders[i].listOfMails.remove(at: j)
-                                    updatedUser?.listOfFolders[i].unreadEmails -= 1
-                                    _ = Database.shared.updateUser(user: &updatedUser!)
-                        }
-                    }
-                }
-            }
-        }
-
-//        print("ututut",user.listOfFolders[0].listOfMails.count)
+        //        print("ututut",user.listOfFolders[0].listOfMails.count)
         return updatedUser
-    }
-    
-    func deleteSentMails(user:  User , mailNo: Int)->User?{
-        var updatedUser = Database.shared.getUserDetails(emailId: user.EmailID)
-        
-        for i in 0..<updatedUser!.listOfFolders.count{
-            if user.listOfFolders[i].name == "Sent"{
-                for j in 0..<updatedUser!.listOfFolders[i].listOfMails.count{
-//                    print(mailNo-1 , "     ---   " , j)
-                    if mailNo - 1 == j {
-                        updatedUser!.listOfFolders[i].listOfMails.remove(at: j)
-                        updatedUser!.listOfFolders[i].unreadEmails -= 1
-                        var updated = Database.shared.updateUser(user: &updatedUser!)
-//                        print(updated?.EmailID , "    ",updatedUser!.EmailID)
-                        
-                    }
-                }
-            }
-        }
-//        print("utututtyftyfytftyfty",updatedUser!.listOfFolders[1].listOfMails.count)
-        return updatedUser!
     }
     
     func addFolders(user:  User , folderName: String)->User?{
@@ -197,18 +265,20 @@ class userUseCase{
     }
     
     func displayListOfFolders(user: User){
-        print(" -------------------------------------- ")
+        //        print(" -------------------------------------- ")
+        print(" ----------- LIST OF FOLDERS --------- ")
         let updatedUser = Database.shared.getUserDetails(emailId: user.EmailID)
         for (index,folders) in updatedUser!.listOfFolders.enumerated(){
-            print(index+1 , folders.name ,folders.unreadEmails)
+            print("SNo: \(index+1)  | folderName: \(folders.name)  | UnreadMails:  \(folders.unreadEmails)  | TotalMails:   \(folders.listOfMails.count)")
         }
         print(" -------------------------------------- ")
     }
     
-    func displaySelectedMail(user: User , folderName: String , mailNoToOpen: Int)->User?{
+    func displaySelectedMail(user: User , folderName: String , mailNoToOpen: Int)-> User?{
         print(" -------------------------------------- ")
         print("displaying MailNo: \(mailNoToOpen)")
         var updatedUser = Database.shared.getUserDetails(emailId: user.EmailID)
+        
         for i in 0..<updatedUser!.listOfFolders.count{
             if updatedUser!.listOfFolders[i].name == folderName{
                 if updatedUser!.listOfFolders[i].listOfMails.isEmpty {
@@ -221,31 +291,33 @@ class userUseCase{
                             print(" toAddress: ",updatedUser!.listOfFolders[i].listOfMails[i].toAddress)
                             print(" subject: ",updatedUser!.listOfFolders[i].listOfMails[i].subject ?? " ")
                             print(" content: ",updatedUser!.listOfFolders[i].listOfMails[i].body ?? " ")
-                            if updatedUser!.listOfFolders[i].listOfMails[i].isRead == false{
+                            if updatedUser!.listOfFolders[i].listOfMails[i].isRead == false && updatedUser!.listOfFolders[i].unreadEmails>0 {
                                 updatedUser!.listOfFolders[i].unreadEmails -= 1
                             }
                             updatedUser!.listOfFolders[i].listOfMails[i].isRead = true
-    //                        print("isReadStatus: 11111", updatedUser!.listOfFolders[i].listOfMails[i].isRead)
+                            //                        print("isReadStatus: 11111", updatedUser!.listOfFolders[i].listOfMails[i].isRead)
                             let updatedUser1 = Database.shared.updateUser(user: &updatedUser!)
-    //                        print("update complete")
+                            //                        print("update complete")
                             if let cc = updatedUser!.listOfFolders[i].listOfMails[i].cc {
                                 print(" cc: ",terminator: " ")
                                 for user in cc {
-                                    print(user)
+                                    print(user,terminator: " ")
                                 }
                             }
                             updatedUser = updatedUser1
-    //                        print("isReadStatus: ",updatedUser?.listOfFolders[0].listOfMails[0].isRead,updatedUser?.listOfFolders[0].listOfMails[0].subject)
-    //                        print(updatedUser?.EmailID)
+                            //                        print("isReadStatus: ",updatedUser?.listOfFolders[0].listOfMails[0].isRead,updatedUser?.listOfFolders[0].listOfMails[0].subject)
+                            //                        print(updatedUser?.EmailID)
                         }
                     }
                 }
-               
+                
             }
         }
+        print()
         print(" -------------------------------------- ")
-//        print(updatedUser?.EmailID)
+        //        print(updatedUser?.EmailID)
         return updatedUser ?? nil
     }
+    
     
 }

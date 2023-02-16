@@ -7,6 +7,7 @@
 
 import Foundation
 
+
 class Database{
     
     static let shared  = Database()
@@ -15,42 +16,6 @@ class Database{
     private var emailAndUser: [String:User] = [ : ]
     private var AllEmails: [Emails] = [ ]
      var  isUserLoggedIn: Bool = false
-    
-    func registerUser(user: User)->Bool{
-        if emailAndUser[user.EmailID] == nil {
-            emailAndUser[user.EmailID] = user
-            return true
-        }else{
-            return false
-        }
-    }
-    
-    func loginUser(emailId: String , password: String)->User? {
-        
-        if isUserLoggedIn == false{
-            if password == emailAndUser[emailId]?.password  {
-                print("user logged in succesfully")
-                isUserLoggedIn = true
-                return emailAndUser[emailId]
-            }else{
-                return nil
-            }
-        }else{
-            print("logout current user to login ")
-            return nil
-        }
-        
-    }
-    
-    func validateUser(toAddress: String) -> Bool{
-        
-        if emailAndUser[toAddress] != nil{
-            return true
-        }else{
-            return false
-        }
-       
-    }
     
 //    func validateCC(emailCC: [String]?) -> Bool {
 //        var result: Bool = true
@@ -82,6 +47,63 @@ class Database{
 //        return result
 //    }
     
+}
+
+extension Database: AuthenticationContract{
+    
+    
+    func logoutUser(){
+        
+    }
+    
+    func registerUser(user: User)->Bool{
+        if emailAndUser[user.EmailID] == nil {
+            emailAndUser[user.EmailID] = user
+            return true
+        }else{
+            return false
+        }
+    }
+    
+    func loginUser(emailId: String , password: String)->User? {
+        
+        if isUserLoggedIn == false{
+            if password == emailAndUser[emailId]?.password  {
+                print("user logged in succesfully")
+                isUserLoggedIn = true
+                return emailAndUser[emailId]
+            }else{
+                return nil
+            }
+        }else{
+            print("logout current user to login ")
+            return nil
+        }
+        
+    }
+}
+
+extension Database: MailContract{
+    
+    func validateUser(toAddress: String) -> Bool{
+        
+        if emailAndUser[toAddress] != nil{
+            return true
+        }else{
+            return false
+        }
+       
+    }
+    
+    
+    func sendMail(email: Emails){
+        
+        AllEmails.append(email)
+        
+//        print("database - adding ail to allmails: ")
+    }
+    
+    
     func validateCC(email: Emails) -> Bool {
        
         guard let cc = email.cc else {
@@ -108,14 +130,16 @@ class Database{
        
         return true
     }
-
-    func sendMail(email: Emails){
+    
+    func getAllMails()->[Emails]{
         
-        AllEmails.append(email)
-        
-//        print("database - adding ail to allmails: ")
+        return self.AllEmails
     }
     
+    
+}
+
+extension Database: UserDetailsContract{
     func updateUser(user: inout User)->User?{
         
         emailAndUser[user.EmailID] = user
@@ -129,11 +153,6 @@ class Database{
         return emailAndUser[emailId]
     }
     
-    func getAllMails()->[Emails]{
-        
-        return self.AllEmails
-    }
-    
     func displayAllTheData(){
         print(" -------------------------------------- ")
         for (key,value) in emailAndUser{
@@ -142,7 +161,4 @@ class Database{
         }
         print(" -------------------------------------- ")
     }
-    
 }
-
-

@@ -7,7 +7,7 @@
 
 import Foundation
 
-internal struct User{
+ struct User{
     
     let Name: String
     let EmailID: String
