@@ -39,17 +39,18 @@ class Database{
             print("logout current user to login ")
             return nil
         }
+        
     }
     
-    
     func validateUser(toAddress: String) -> Bool{
+        
         if emailAndUser[toAddress] != nil{
             return true
         }else{
             return false
         }
+       
     }
-    
     
 //    func validateCC(emailCC: [String]?) -> Bool {
 //        var result: Bool = true
@@ -82,6 +83,7 @@ class Database{
 //    }
     
     func validateCC(email: Emails) -> Bool {
+       
         guard let cc = email.cc else {
             print("Authentication - All mails are empty.")
             return true
@@ -103,40 +105,42 @@ class Database{
                 return false
             }
         }
-        
+       
         return true
     }
 
     func sendMail(email: Emails){
+        
         AllEmails.append(email)
+        
 //        print("database - adding ail to allmails: ")
     }
     
     func updateUser(user: inout User)->User?{
+        
         emailAndUser[user.EmailID] = user
 //        print("database - updating")
+        
         return emailAndUser[user.EmailID]
     }
-    
-    func addSentMail(id: String, mail: Emails) {
-        let this = emailAndUser[id]
-//        this?.listOfFolders[0].listOfMails.append(ma)
-    }
-    
+
     func getUserDetails(emailId: String)->User?{
 //        print("getting user details : ")
         return emailAndUser[emailId]
     }
     
     func getAllMails()->[Emails]{
+        
         return self.AllEmails
     }
     
     func displayAllTheData(){
+        print(" -------------------------------------- ")
         for (key,value) in emailAndUser{
             print(key,value)
             print("     ")
         }
+        print(" -------------------------------------- ")
     }
     
 }
