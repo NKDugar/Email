@@ -9,9 +9,9 @@ import Foundation
 
 protocol AuthenticationContract{
     
-    func registerUser(user: User)->Bool
+    func registerUser(user:  User)->Bool
     func loginUser(emailId: String , password: String)->User?
-    func logoutUser()
+    func logoutUser()->Bool
     
 }
 

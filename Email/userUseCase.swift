@@ -101,8 +101,8 @@ class userUseCase{
         return fromAddressUser
     }
     
-    func userLogout(){
-        Database.shared.isUserLoggedIn = false
+    func userLogout()->Bool{
+        return Database.shared.logoutUser()
     }
     
     //    func displaySentMails(user: User ){
@@ -274,16 +274,16 @@ class userUseCase{
         print(" -------------------------------------- ")
     }
     
-    func displaySelectedMail(user: User , folderName: String , mailNoToOpen: Int)-> User?{
+    func displaySelectedMail(user: User , folderName: String , mailNoToOpen: Int)-> (User?,Emails?){
         print(" -------------------------------------- ")
         print("displaying MailNo: \(mailNoToOpen)")
         var updatedUser = Database.shared.getUserDetails(emailId: user.EmailID)
-        
+        var CurrentEmail = Emails()
         for i in 0..<updatedUser!.listOfFolders.count{
             if updatedUser!.listOfFolders[i].name == folderName{
                 if updatedUser!.listOfFolders[i].listOfMails.isEmpty {
                     print("useCase - displaySelectedMail - no mails to display ")
-                    return updatedUser
+                    return (updatedUser,nil)
                 }else{
                     for i in 0..<updatedUser!.listOfFolders[i].listOfMails.count{
                         if mailNoToOpen - 1 == i {
@@ -291,6 +291,9 @@ class userUseCase{
                             print(" toAddress: ",updatedUser!.listOfFolders[i].listOfMails[i].toAddress)
                             print(" subject: ",updatedUser!.listOfFolders[i].listOfMails[i].subject ?? " ")
                             print(" content: ",updatedUser!.listOfFolders[i].listOfMails[i].body ?? " ")
+                            
+                            CurrentEmail = updatedUser!.listOfFolders[i].listOfMails[i]
+                            
                             if updatedUser!.listOfFolders[i].listOfMails[i].isRead == false && updatedUser!.listOfFolders[i].unreadEmails>0 {
                                 updatedUser!.listOfFolders[i].unreadEmails -= 1
                             }
@@ -316,8 +319,43 @@ class userUseCase{
         print()
         print(" -------------------------------------- ")
         //        print(updatedUser?.EmailID)
+        return (updatedUser ?? nil , CurrentEmail )
+    }
+    
+    func copyMailToAnotherFolder(user: User , email: Emails , folderName: String)->User?{
+        
+        var updatedUser = Database.shared.getUserDetails(emailId: user.EmailID)
+        let result = validateFolder(user: user , folderName: folderName)
+        
+        if result {
+            for i in 0..<updatedUser!.listOfFolders.count {
+                if updatedUser!.listOfFolders[i].name == folderName {
+                    updatedUser!.listOfFolders[i].listOfMails.append(email)
+                    updatedUser = Database.shared.updateUser(user: &updatedUser!)
+                }
+            }
+        }else{
+            updatedUser = addFolders(user: user, folderName: folderName)
+            for i in 0..<updatedUser!.listOfFolders.count {
+                if updatedUser!.listOfFolders[i].name == folderName {
+                    updatedUser!.listOfFolders[i].listOfMails.append(email)
+                    updatedUser = Database.shared.updateUser(user: &updatedUser!)
+                }
+            }
+        }
+        
         return updatedUser ?? nil
     }
     
+    func validateFolder(user: User , folderName: String)->Bool{
+        var result: Bool = false
+        let  updateUser = Database.shared.getUserDetails(emailId: user.EmailID)
+        for folder in updateUser!.listOfFolders{
+            if folder.name == folderName{
+                result = true
+            }
+        }
+        return result
+    }
     
 }

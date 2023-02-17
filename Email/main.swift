@@ -9,6 +9,7 @@ import Foundation
 
 private var useCase = userUseCase()
 private var currentUser = User()
+private var currentEmail = Emails()
 
 var acc1 = User(Name: "naveen",  EmailID: "naveen@gmail.com" , password: "12345")
 var acc2 = User(Name: "guhan", EmailID: "guhan@gmail.com" , password: "12345")
@@ -41,7 +42,7 @@ while true{
             print("enter password: ",terminator: " ")
             let password = readLine()!
             print(" -------------------------------------- ")
-            var newUser = User(Name: userName, EmailID: emailID, password: password)
+            let newUser = User(Name: userName, EmailID: emailID, password: password)
             if useCase.registerUser(user: newUser){
                 print("user registration successfull ")
             }
@@ -112,7 +113,7 @@ while true{
         case 6:
             print(" ----- logout ------")
             print("emailId: \(currentUser.EmailID)")
-            useCase.userLogout()
+            _ = useCase.userLogout()
             registerAndLoginPage()
             
         case 10:
@@ -189,7 +190,7 @@ while true{
         print("1. back")
         print("2. deleteMails")
         print("3. openMail")
-        print("4. moveTo")
+        print("4. copyToAnotherFolder")
         print("selected option: ",terminator: " ")
         let optionSelected = readLine()!
         let optionselected = Int(optionSelected)
@@ -206,8 +207,8 @@ while true{
             print("main - afterOpeningInboxMails - ")
             afterOpeningInboxMails(user: currentUser)
         case 4:
-            print("----- move to ------")
-            
+            print("----- copy to ------")
+            copyToAnotherFolder(email: currentEmail)
             
         default:
             print("-------- invalid number entered -------")
@@ -227,9 +228,9 @@ while true{
         print("input number: ",input1)
         print(" -------------------------------------- ")
         currentUser = useCase.deleteMail(user: currentUser, mailNo: input1 , folderName: "Inbox") ?? User()
-        if currentUser == nil {
-            print("deletingInboxMails() - currentUser is nil ")
-        }
+//        if currentUser == nil {
+//            print("deletingInboxMails() - currentUser is nil ")
+//        }
         afterOpeningInboxMails(user: currentUser)
         
     }
@@ -284,29 +285,21 @@ while true{
         let optionSelected = readLine()!
         let optionselected = Int(optionSelected)
         print(" -------------------------------------------------------------------------------- ")
-        currentUser = useCase.displaySelectedMail(user: currentUser, folderName: folderName, mailNoToOpen: optionselected!)!
+        currentUser = useCase.displaySelectedMail(user: currentUser, folderName: folderName, mailNoToOpen: optionselected!).0!
+        currentEmail = useCase.displaySelectedMail(user: currentUser, folderName: folderName, mailNoToOpen: optionselected!).1!
         
     }
     
-//    func afterOpeningAMail(user: User,email: Emails){
-//        print(" -------------------------------------------------------------------------------- ")
-//        print("----------- afterOpeningAMail -------")
-//        print("1. addToFavourites ")
-//        print("2. back")
-//        let input = readLine()
-//        let input1 = Int(input ?? "0") ?? -1
-//        print(" -------------------------------------------------------------------------------- ")
-//        switch input1{
-//        case 1:
-//            print("adding to favourites")
-//            useCase.addingToFavourites()
-//        case 2:
-//            print("back")
-//        default:
-//            print("invalid number entered")
-//        }
-//    }
+    func copyToAnotherFolder(email: Emails){
+        print("--------copy a mail to another folder----------")
+        useCase.displayListOfFolders(user: currentUser)
+        print("enter the name of the folder:  ",terminator: " ")
+        let nameOfFolder = readLine()!
+        currentUser = useCase.copyMailToAnotherFolder(user: currentUser, email: email, folderName: nameOfFolder)!
+        afterLogin(user: currentUser)
+    }
     
-    useCase.userLogout()
+    _ = useCase.userLogout()
     registerAndLoginPage()
+    
 }

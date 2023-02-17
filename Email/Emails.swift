@@ -17,6 +17,17 @@ struct Emails{
     var isRead: Bool?
     var isFavourite: Bool?
     
+    init() {
+        self.toAddress = " "
+        self.fromAddress = " "
+        self.subject = " "
+        self.body = " "
+        self.cc = []
+        self.isRead = nil
+        self.isFavourite = nil
+    }
+    
+    
     init(toAddress: String, fromAddress: String, subject: String? = nil, body: String? = nil, cc: [String]? = nil, isRead: Bool? , isFavourite: Bool? ) {
         self.toAddress = toAddress
         self.fromAddress = fromAddress

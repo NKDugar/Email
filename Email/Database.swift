@@ -6,7 +6,7 @@
 //
 
 import Foundation
-
+import CryptoKit
 
 class Database{
     
@@ -15,7 +15,7 @@ class Database{
     
     private var emailAndUser: [String:User] = [ : ]
     private var AllEmails: [Emails] = [ ]
-     var  isUserLoggedIn: Bool = false
+    private var  isUserLoggedIn: Bool = false
     
 //    func validateCC(emailCC: [String]?) -> Bool {
 //        var result: Bool = true
@@ -50,15 +50,18 @@ class Database{
 }
 
 extension Database: AuthenticationContract{
+
     
-    
-    func logoutUser(){
-        
+    func logoutUser()->Bool{
+        isUserLoggedIn = false
+        return isUserLoggedIn
     }
     
-    func registerUser(user: User)->Bool{
+    func registerUser(user:  User)->Bool{
+        let hashedPassword = SHA256.hash(data: Data(user.password.utf8)).compactMap { String(format: "%02x", $0) }.joined()
+        let newUser = User(Name: user.Name, EmailID: user.EmailID, password: hashedPassword)
         if emailAndUser[user.EmailID] == nil {
-            emailAndUser[user.EmailID] = user
+            emailAndUser[user.EmailID] = newUser
             return true
         }else{
             return false
@@ -68,7 +71,8 @@ extension Database: AuthenticationContract{
     func loginUser(emailId: String , password: String)->User? {
         
         if isUserLoggedIn == false{
-            if password == emailAndUser[emailId]?.password  {
+            let enteredPasswordHash = SHA256.hash(data: Data(password.utf8)).compactMap { String(format: "%02x", $0) }.joined()
+            if enteredPasswordHash == emailAndUser[emailId]?.password  {
                 print("user logged in succesfully")
                 isUserLoggedIn = true
                 return emailAndUser[emailId]
@@ -95,14 +99,12 @@ extension Database: MailContract{
        
     }
     
-    
     func sendMail(email: Emails){
         
         AllEmails.append(email)
         
 //        print("database - adding ail to allmails: ")
     }
-    
     
     func validateCC(email: Emails) -> Bool {
        
@@ -135,11 +137,11 @@ extension Database: MailContract{
         
         return self.AllEmails
     }
-    
-    
+
 }
 
 extension Database: UserDetailsContract{
+    
     func updateUser(user: inout User)->User?{
         
         emailAndUser[user.EmailID] = user
