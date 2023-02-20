@@ -29,7 +29,7 @@ class userUseCase{
     func sendEmail(user:  User , email: Emails)->User?{
         
         Database.shared.sendMail(email: email)
-        let fromAddressUser = sendEmailFromUser(emailId: email.fromAddress, email: email)
+        var fromAddressUser = sendEmailFromUser(emailId: email.fromAddress, email: email)
         sendEmailToUser(emailId: email.toAddress, email: email)
         
         let cc = email.cc
@@ -58,11 +58,11 @@ class userUseCase{
                 }
             }
         }
-        return fromAddressUser ?? nil
+        return fromAddressUser
     }
     
     func sendEmailToUser(emailId:  String , email: Emails) {
-        var toAddressUser = Database.shared.getUserDetails(emailId: email.toAddress)
+        var toAddressUser = Database.shared.getUserDetails(emailId: emailId)
         
         for i in 0..<toAddressUser!.listOfFolders.count{
             if toAddressUser?.listOfFolders.isEmpty == true {
@@ -79,26 +79,29 @@ class userUseCase{
     
     func deleteMail(user:  User , mailNo: Int, folderName: String)->User?{
         var updatedUser = Database.shared.getUserDetails(emailId: user.EmailID)
-        
-        for i in 0..<updatedUser!.listOfFolders.count{
-            if updatedUser!.listOfFolders[i].name == folderName{
-                if updatedUser!.listOfFolders[i].listOfMails.isEmpty{
-                    print("NO MAILS TO DELETE ")
-                }else{
-                    for j in 0..<updatedUser!.listOfFolders[i].listOfMails.count{
-                        if mailNo - 1 == j {
-                            if updatedUser!.listOfFolders[2].name == "Bin"{
-                                updatedUser!.listOfFolders[2].listOfMails.append(updatedUser!.listOfFolders[i].listOfMails[mailNo-1])
-                                updatedUser!.listOfFolders[2].unreadEmails += 1
-                                updatedUser!.listOfFolders[i].listOfMails.remove(at: j)
-                                updatedUser?.listOfFolders[i].unreadEmails -= 1
-                                _ = Database.shared.updateUser(user: &updatedUser!)
+        if mailNo < updatedUser!.listOfFolders.count{
+            for i in 0..<updatedUser!.listOfFolders.count{
+                if updatedUser!.listOfFolders[i].name == folderName{
+                    if updatedUser!.listOfFolders[i].listOfMails.isEmpty{
+                        print("NO MAILS TO DELETE ")
+                    }else{
+                        for j in 0..<updatedUser!.listOfFolders[i].listOfMails.count{
+                            if mailNo - 1 == j {
+                                if updatedUser!.listOfFolders[2].name == "Bin"{
+                                    updatedUser!.listOfFolders[2].listOfMails.append(updatedUser!.listOfFolders[i].listOfMails[mailNo-1])
+                                    updatedUser!.listOfFolders[2].unreadEmails += 1
+                                    updatedUser!.listOfFolders[i].listOfMails.remove(at: j)
+                                    updatedUser?.listOfFolders[i].unreadEmails -= 1
+                                    _ = Database.shared.updateUser(user: &updatedUser!)
+                                }
                             }
                         }
+                        
                     }
-                    
                 }
             }
+        }else{
+            print("entered INVALID number")
         }
         
         //        print("ututut",user.listOfFolders[0].listOfMails.count)
@@ -132,7 +135,7 @@ extension userUseCase: UserDisplayContract{
     
     func displayInboxMails(user: User , folderName: String){
         print("----------------------------------------")
-        //        print("userEmailId in DisplaysenTmails: \(user.EmailID)")
+        print(" displayInboxMails - userusecase - 00000000  ")
         let user1 = Database.shared.getUserDetails(emailId: user.EmailID)
         
         for folder in user1!.listOfFolders{
@@ -193,8 +196,8 @@ extension userUseCase: UserDisplayContract{
     }
     
     func displaySelectedMail(user: User , folderName: String , mailNoToOpen: Int)-> (User?,Emails?){
-        print(" -------------------------------------- ")
-        print("displaying MailNo: \(mailNoToOpen)")
+        
+        print("displaying MailNo to DELETE : \(mailNoToOpen)")
         var updatedUser = Database.shared.getUserDetails(emailId: user.EmailID)
         var CurrentEmail = Emails()
         for i in 0..<updatedUser!.listOfFolders.count{
@@ -203,32 +206,36 @@ extension userUseCase: UserDisplayContract{
                     print("useCase - displaySelectedMail - no mails to display ")
                     return (updatedUser,nil)
                 }else{
-                    for i in 0..<updatedUser!.listOfFolders[i].listOfMails.count{
-                        if mailNoToOpen - 1 == i {
-                            print(" fromAddress: ",updatedUser!.listOfFolders[i].listOfMails[i].fromAddress)
-                            print(" toAddress: ",updatedUser!.listOfFolders[i].listOfMails[i].toAddress)
-                            print(" subject: ",updatedUser!.listOfFolders[i].listOfMails[i].subject ?? " ")
-                            print(" content: ",updatedUser!.listOfFolders[i].listOfMails[i].body ?? " ")
-                            
-                            CurrentEmail = updatedUser!.listOfFolders[i].listOfMails[i]
-                            
-                            if updatedUser!.listOfFolders[i].listOfMails[i].isRead == false && updatedUser!.listOfFolders[i].unreadEmails>0 {
-                                updatedUser!.listOfFolders[i].unreadEmails -= 1
-                            }
-                            updatedUser!.listOfFolders[i].listOfMails[i].isRead = true
-                            //                        print("isReadStatus: 11111", updatedUser!.listOfFolders[i].listOfMails[i].isRead)
-                            let updatedUser1 = Database.shared.updateUser(user: &updatedUser!)
-                            //                        print("update complete")
-                            if let cc = updatedUser!.listOfFolders[i].listOfMails[i].cc {
-                                print(" cc: ",terminator: " ")
-                                for user in cc {
-                                    print(user,terminator: " ")
+                    if mailNoToOpen <= updatedUser!.listOfFolders[i].listOfMails.count {
+                        for i in 0..<updatedUser!.listOfFolders[i].listOfMails.count{
+                            if mailNoToOpen - 1 == i {
+                                print(" fromAddress: ",updatedUser!.listOfFolders[i].listOfMails[i].fromAddress)
+                                print(" toAddress: ",updatedUser!.listOfFolders[i].listOfMails[i].toAddress)
+                                print(" subject: ",updatedUser!.listOfFolders[i].listOfMails[i].subject ?? " ")
+                                print(" content: ",updatedUser!.listOfFolders[i].listOfMails[i].body ?? " ")
+                                
+                                CurrentEmail = updatedUser!.listOfFolders[i].listOfMails[i]
+                                
+                                if updatedUser!.listOfFolders[i].listOfMails[i].isRead == false && updatedUser!.listOfFolders[i].unreadEmails>0 {
+                                    updatedUser!.listOfFolders[i].unreadEmails -= 1
                                 }
+                                updatedUser!.listOfFolders[i].listOfMails[i].isRead = true
+                                //                        print("isReadStatus: 11111", updatedUser!.listOfFolders[i].listOfMails[i].isRead)
+                                let updatedUser1 = Database.shared.updateUser(user: &updatedUser!)
+                                //                        print("update complete")
+                                if let cc = updatedUser!.listOfFolders[i].listOfMails[i].cc {
+                                    print(" cc: ",terminator: " ")
+                                    for user in cc {
+                                        print(user,terminator: " ")
+                                    }
+                                }
+                                updatedUser = updatedUser1
+                                //                        print("isReadStatus: ",updatedUser?.listOfFolders[0].listOfMails[0].isRead,updatedUser?.listOfFolders[0].listOfMails[0].subject)
+                                //                        print(updatedUser?.EmailID)
                             }
-                            updatedUser = updatedUser1
-                            //                        print("isReadStatus: ",updatedUser?.listOfFolders[0].listOfMails[0].isRead,updatedUser?.listOfFolders[0].listOfMails[0].subject)
-                            //                        print(updatedUser?.EmailID)
                         }
+                    }else{
+                        print("entered INVALID NUMBER ")
                     }
                 }
                 
