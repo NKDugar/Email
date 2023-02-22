@@ -7,9 +7,12 @@
 
 import Foundation
 
-private var useCase = userUseCase()
-private var currentUser = User()
-private var currentEmail = Emails()
+ private var useCase = userUseCase()
+ var currentUser = User()
+ var currentEmail = Emails()
+var currentFolder = ""
+var currentMailId = 0
+
 
 var acc1 = User(Name: "naveen",  EmailID: "naveen@gmail.com" , password: "12345")
 var acc2 = User(Name: "guhan", EmailID: "guhan@gmail.com" , password: "12345")
@@ -25,6 +28,7 @@ let result4 = useCase.registerUser(user: acc4)
 while true{
     
     func registerAndLoginPage(){
+        
         print("welcome to email ")
         print("1. register")
         print("2. login")
@@ -60,6 +64,7 @@ while true{
                 return
             }
             print("LOGIN successfull : \(String(describing: loginUser.EmailID))")
+            
             print(String(repeating: "-", count: 30))
             currentUser = loginUser
             afterLogin(user: currentUser)
@@ -70,12 +75,14 @@ while true{
     }
     
     func afterLogin(user:  User){
+        print(String(repeating: "-", count: 40))
         print("1. compose mail")
         print("2. inboxMails")
         print("3. sentMails")
         print("4. addFolders")
         print("5. listOffolders")
-        print("6. logout")
+        print("6. openFolder")
+        print("7. logout")
         
         let optionSelected = readLine()!
         let optionselected = Int(optionSelected)
@@ -85,17 +92,18 @@ while true{
         case 1:
             print("--------  composing a email -------")
             composeMailView(user: currentUser)
-            
+            print(currentUser.EmailID , " currentemailId ")
+            afterLogin(user: currentUser)
         case 2:
             print("----------  inbox -  --------")
-            useCase.displayInboxMails(user: currentUser , folderName: "Inbox")
-            afterOpeningInboxMails(user: currentUser)
-            print(" ------- finish inbox ------")
+            currentFolder = "Inbox"
+            useCase.displayMails(folderName: currentFolder)
+            openingFolder()
         case 3:
             print("------  sentMails folder ---------")
-            useCase.displaySentMails(user: currentUser , folderName: "Sent")
-            afterOpeningSentMails(user: currentUser)
-            
+            currentFolder = "Sent"
+            useCase.displayMails(folderName: currentFolder)
+            openingFolder()
         case 4:
             print("----- adding folders -----")
             print("enter the name of the folder: ",terminator: " ")
@@ -109,6 +117,20 @@ while true{
             useCase.displayListOfFolders(user: currentUser)
             afterLogin(user: currentUser)
         case 6:
+            print("open a folder")
+            useCase.displayListOfFolders(user: currentUser)
+            print("enter the exact name of the folder you want to open: ",terminator: " ")
+            let folderName = readLine() ?? "none"
+//            currentFolder = folderName
+            if useCase.displayMails(folderName: folderName){
+                openingFolder()
+            }else{
+                print(currentFolder , " 000 ")
+                afterLogin(user: currentUser)
+                
+            }
+            
+        case 7:
             print(" ----- logout ------")
             print("emailId: \(currentUser.EmailID)")
             _ = useCase.logoutUser()
@@ -151,11 +173,62 @@ while true{
             print(String(repeating: "-", count: 30))
             afterLogin(user: user)
         }else{
-            afterComposition(user: currentUser ,email: mail!)
+            afterComposition( email: mail!)
         }
     }
     
-    func afterComposition(user:  User , email: Emails){
+    func openingFolder (){
+        print(String(repeating: "-", count: 30))
+        print("1. openMail")
+        print("2. deleteMail")
+        print("3. back")
+        print("4. markAsRead")
+        print("selected option: ",terminator: " ")
+        
+        let optionSelected = readLine()!
+        let optionselected = Int(optionSelected)
+        print(String(repeating: "-", count: 30))
+        switch optionselected {
+        case 1:
+            print(" open mail in \(currentFolder)")
+            let emailId = gettingMailID()
+            if useCase.openMail(mailId: emailId, folderName: currentFolder){
+                //            have to change this here
+                            openingMail()
+            }else{
+                openingFolder()
+            }
+
+        case 2:
+            print("delete mail in \(currentFolder)")
+            let emailId = gettingMailID()
+            useCase.deleteMail(mailId: emailId, folderName: currentFolder)
+            openingFolder()
+//        case 3:
+//            copyToAnotherFolder(email: currentEmail)
+        case 3:
+            print("goback")
+            afterLogin(user: currentUser)
+        case 4:
+            print("mark as read")
+            let emailId = gettingMailID()
+            useCase.markAsRead(mailId: emailId, folderName: currentFolder)
+            
+        default:
+            print(" invalid number ")
+        }
+        
+    }
+    
+    func gettingMailID()->Int{
+        print("enter the mailID:  ",terminator: " ")
+        let optionSelected = readLine()!
+        let optionselected = Int(optionSelected)
+        print(String(repeating: "-", count: 30))
+        return optionselected ?? -1
+    }
+    
+    func afterComposition(email: Emails){
         print(String(repeating: "-", count: 30))
         print("1. send")
         print("2. cancel")
@@ -166,7 +239,7 @@ while true{
         switch optionselected{
         case 1:
             print("--------  send -------")
-            currentUser = useCase.sendEmail(user: user, email: email)!
+            currentUser = useCase.sendEmail(email: email)!
             afterLogin(user: currentUser)
         case 2:
             print("----------  cancel   --------")
@@ -175,104 +248,61 @@ while true{
             print("-------- invalid number entered -------")
             afterLogin(user: currentUser)
         }
-        
     }
     
-    func afterOpeningInboxMails(user:  User){
-        print(" ---------------after opening inbox----------------------- ")
-        print("1. back")
-        print("2. deleteMails")
-        print("3. openMail")
-        print("4. copyToAnotherFolder")
-        print("selected option: ",terminator: " ")
-        let optionSelected = readLine()!
-        let optionselected = Int(optionSelected)
-        print(String(repeating: "-", count: 30))
-        switch optionselected{
-        case 1:
-            afterLogin(user: currentUser)
-        case 2:
-            print("----- delete selected mails -----")
-            deletingInboxMails(user: currentUser)
-        case 3:
-            print("----- open mail ------ ")
-            openingMail(user: currentUser , folderName: "Inbox")
-            print("main - afterOpeningInboxMails - ")
-            afterOpeningInboxMails(user: currentUser)
-        case 4:
-            print("----- copy to ------")
-            copyToAnotherFolder(email: currentEmail)
-            
-        default:
-            print("-------- invalid number entered -------")
-            afterLogin(user: currentUser)
-        }
-        
-    }
-    
-    func deletingInboxMails(user:  User){
-        print(String(repeating: "-", count: 30))
-        print("enter the mail SNo. to delete: ",terminator: " ")
-        let input = readLine()
-        let input1 = Int(input ?? "0") ?? -1
-        print("input number: ",input1)
-        currentUser = useCase.deleteMail(user: currentUser, mailNo: input1 , folderName: "Inbox") ?? User()
-//      afterOpeningInboxMails(user: currentUser)
-        print(String(repeating: "-", count: 30))
-        afterLogin(user: currentUser)
-    }
-    
-    func afterOpeningSentMails(user:  User){
-        print("1. back")
-        print("2. deleteMails")
-        print("selected option: ",terminator: " ")
-        let optionSelected = readLine()!
-        let optionselected = Int(optionSelected)
-        print(String(repeating: "-", count: 30))
-        switch optionselected{
-        case 1:
-            afterLogin(user: currentUser)
-        case 2:
-            deletingSentMails(user: currentUser)
-            print(String(repeating: "-", count: 30))
-        default:
-            print("-------- invalid number entered -------")
-        }
-    }
-    
-    func deletingSentMails(user:  User){
-        
-        print("-------- deletingSentMails() ------- ")
-        print("enter the mail SNo. to delete : ",terminator: " ")
-        let input = readLine()
-        let input1 = Int(input ?? "0") ?? -1
-        currentUser = useCase.deleteMail(user: currentUser, mailNo: input1 , folderName: "Sent")!
-        print(String(repeating: "-", count: 30))
-        afterOpeningSentMails(user: currentUser)
-    }
-    
-    func openingMail(user:  User, folderName: String){
-        
-        print(" ---- opening a mail -----")
-        print("enter the mail no: to open ",terminator: " ")
-        let optionSelected = readLine()!
-        let optionselected = Int(optionSelected)
-        print(String(repeating: "-", count: 30))
-        let output = useCase.displaySelectedMail(user: currentUser, folderName: folderName, mailNoToOpen: optionselected!)
-        currentUser = output.0!
-        currentEmail = output.1!
-    
-        
-    }
-    
-    func copyToAnotherFolder(email: Emails){
-        print("--------copy a mail to another folder----------")
+    func moveToAnotherFolder(email: Emails){
+        print("--------move a mail to another folder----------")
         useCase.displayListOfFolders(user: currentUser)
         print("enter the name of the folder:  ",terminator: " ")
         let nameOfFolder = readLine()!
-        currentUser = useCase.copyMailToAnotherFolder(user: currentUser, email: email, folderName: nameOfFolder)!
+        currentUser = useCase.moveMailToAnotherFolder(user: currentUser, email: email, folderName: nameOfFolder)!
         afterLogin(user: currentUser)
     }
+    
+    func openingMail(){
+        print("after open mail ")
+        print("1. markAsFavourite")
+        print("2. moveToAnotherFolder")
+//        print("2. reply")
+        print("3. delete")
+        print("4. back")
+        let input = readLine()
+        guard let input = input else{
+            print("nothing entered ")
+            return
+        }
+        let input1 = Int(input) ?? -1
+        switch input1 {
+        case 1:
+            print("mark as fav")
+            let emailId = gettingMailID()
+            useCase.markAsFavourite(mailId: currentMailId)
+            openingFolder()
+        case 2:
+            print("moveToAnotherFolder")
+            let folderName = getFolderName()
+            currentUser = useCase.moveMailToAnotherFolder(user: currentUser, email: currentEmail, folderName: folderName)!
+            openingFolder()
+        case 3:
+            print("delete mail in \(currentFolder)")
+            let emailId = gettingMailID()
+            useCase.deleteMail(mailId: emailId, folderName: currentFolder)
+            openingFolder()
+        case 4:
+            print("back")
+            openingFolder()
+        default:
+            print("invalid number entered")
+        }
+        
+    }
+    
+    func getFolderName()->String{
+        print("enter the folder name: ",terminator: " ")
+        let input = readLine()!
+        return input
+    }
+    
     
     _ = useCase.logoutUser()
     registerAndLoginPage()

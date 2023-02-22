@@ -7,15 +7,15 @@
 
 import Foundation
 
-struct Folder {
+public struct Folder {
     
-    var name: String
-    var unreadEmails: Int = 0
+    let name: String
+    var unreadEmailsCount: Int = 0
     var listOfMails: [Emails] = []
+    
     
     init(name: String) {
         self.name = name
     }
-    
     
 }

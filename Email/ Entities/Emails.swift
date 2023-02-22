@@ -7,15 +7,15 @@
 
 import Foundation
 
-struct Emails{
+public struct Emails{
     
-    var toAddress: String
-    var fromAddress: String
-    var subject: String?
-    var body: String?
-    var cc: [String]?
-    var isRead: Bool?
-    var isFavourite: Bool?
+    let toAddress: String
+    let fromAddress: String
+    let subject: String?
+    let body: String?
+    let cc: [String]?
+    var isRead: Bool
+    var isFavourite: Bool
     
     init() {
         self.toAddress = " "
@@ -23,12 +23,12 @@ struct Emails{
         self.subject = " "
         self.body = " "
         self.cc = []
-        self.isRead = nil
-        self.isFavourite = nil
+        self.isRead = false
+        self.isFavourite = false
     }
     
     
-    init(toAddress: String, fromAddress: String, subject: String? = nil, body: String? = nil, cc: [String]? = nil, isRead: Bool? , isFavourite: Bool? ) {
+    init(toAddress: String, fromAddress: String, subject: String? = nil, body: String? = nil, cc: [String]? = nil, isRead: Bool , isFavourite: Bool ) {
         self.toAddress = toAddress
         self.fromAddress = fromAddress
         self.subject = subject

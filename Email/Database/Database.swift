@@ -8,7 +8,7 @@
 import Foundation
 import CryptoKit
 
-class Database{
+class Database {
     
     static let shared  = Database()
     private init(){}
@@ -17,10 +17,9 @@ class Database{
     private var AllEmails: [Emails] = [ ]
     private var  isUserLoggedIn: Bool = false
     
-    
 }
 
-extension Database: AuthenticationContract{
+extension Database: AuthenticationContract {
     
     func logoutUser()->Bool{
         isUserLoggedIn = false
@@ -57,7 +56,7 @@ extension Database: AuthenticationContract{
     }
 }
 
-extension Database: MailContract{
+extension Database {
     
     func validateUser(toAddress: String) -> Bool{
         
@@ -105,9 +104,9 @@ extension Database: MailContract{
 
 }
 
-extension Database: UserDetailsContract{
+extension Database {
     
-    func updateUser(user: inout User)->User?{
+    func updateUser(user:  User) -> User?{
         emailAndUser[user.EmailID] = user
         return emailAndUser[user.EmailID]
     }
@@ -124,4 +123,6 @@ extension Database: UserDetailsContract{
         }
         print(" -------------------------------------- ")
     }
+    
+    
 }

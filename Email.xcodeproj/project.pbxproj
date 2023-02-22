@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		06494EC929A3A9DC006D09BC /* ErrorHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06494EC829A3A9DC006D09BC /* ErrorHandling.swift */; };
 		0662CB62299E607900128962 /* EmailAppContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0662CB61299E607900128962 /* EmailAppContract.swift */; };
 		066EC305299B5399006CE470 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 066EC304299B5399006CE470 /* main.swift */; };
 		066EC30C299B53A5006CE470 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 066EC30B299B53A5006CE470 /* User.swift */; };
@@ -29,6 +30,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		06494EC829A3A9DC006D09BC /* ErrorHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorHandling.swift; sourceTree = "<group>"; };
 		0662CB61299E607900128962 /* EmailAppContract.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailAppContract.swift; sourceTree = "<group>"; };
 		066EC301299B5399006CE470 /* Email */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Email; sourceTree = BUILT_PRODUCTS_DIR; };
 		066EC304299B5399006CE470 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
@@ -50,6 +52,48 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		066152E629A4F4310053193A /* useCaseFiles */ = {
+			isa = PBXGroup;
+			children = (
+				066EC311299B54F3006CE470 /* userUseCase.swift */,
+			);
+			path = useCaseFiles;
+			sourceTree = "<group>";
+		};
+		066152E729A4F46B0053193A /*  Entities */ = {
+			isa = PBXGroup;
+			children = (
+				066EC30F299B5496006CE470 /* Folder.swift */,
+				066EC30D299B540D006CE470 /* Emails.swift */,
+				066EC30B299B53A5006CE470 /* User.swift */,
+			);
+			path = " Entities";
+			sourceTree = "<group>";
+		};
+		066152E829A4F4800053193A /* errorHandling */ = {
+			isa = PBXGroup;
+			children = (
+				06494EC829A3A9DC006D09BC /* ErrorHandling.swift */,
+			);
+			path = errorHandling;
+			sourceTree = "<group>";
+		};
+		066152E929A4F4910053193A /* Database */ = {
+			isa = PBXGroup;
+			children = (
+				066EC313299B5517006CE470 /* Database.swift */,
+			);
+			path = Database;
+			sourceTree = "<group>";
+		};
+		066152EA29A4F4AE0053193A /* protocols */ = {
+			isa = PBXGroup;
+			children = (
+				0662CB61299E607900128962 /* EmailAppContract.swift */,
+			);
+			path = protocols;
+			sourceTree = "<group>";
+		};
 		066EC2F8299B5399006CE470 = {
 			isa = PBXGroup;
 			children = (
@@ -70,12 +114,11 @@
 			isa = PBXGroup;
 			children = (
 				066EC304299B5399006CE470 /* main.swift */,
-				066EC30B299B53A5006CE470 /* User.swift */,
-				066EC30D299B540D006CE470 /* Emails.swift */,
-				066EC30F299B5496006CE470 /* Folder.swift */,
-				066EC311299B54F3006CE470 /* userUseCase.swift */,
-				0662CB61299E607900128962 /* EmailAppContract.swift */,
-				066EC313299B5517006CE470 /* Database.swift */,
+				066152E629A4F4310053193A /* useCaseFiles */,
+				066152EA29A4F4AE0053193A /* protocols */,
+				066152E729A4F46B0053193A /*  Entities */,
+				066152E929A4F4910053193A /* Database */,
+				066152E829A4F4800053193A /* errorHandling */,
 			);
 			path = Email;
 			sourceTree = "<group>";
@@ -138,6 +181,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				06494EC929A3A9DC006D09BC /* ErrorHandling.swift in Sources */,
 				066EC314299B5517006CE470 /* Database.swift in Sources */,
 				066EC30E299B540D006CE470 /* Emails.swift in Sources */,
 				066EC312299B54F3006CE470 /* userUseCase.swift in Sources */,

@@ -28,4 +28,6 @@ import Foundation
         self.listOfFolders = [Folder(name: "Inbox") , Folder(name: "Sent"),Folder(name: "Bin") ]
     }
    
+    
+     
 }
